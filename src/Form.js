@@ -1,8 +1,33 @@
+import { useState } from 'react'
 import styled from 'styled-components/macro'
 
 export default function Form() {
+  const [userProfile, setUserProfile] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    gender: '',
+    toc: false,
+  })
+
+  function register(event) {
+    event.preventDefault()
+    if (!userProfile.toc) {
+      alert('Please confirm our ToC')
+    }
+    console.log(userProfile)
+  }
+
+  function handleInputChange(event) {
+    const fieldName = event.target.name
+    const fieldValue =
+      fieldName === 'toc' ? event.target.checked : event.target.value
+
+    setUserProfile({ ...userProfile, [fieldName]: fieldValue })
+  }
+
   return (
-    <RegisterForm>
+    <RegisterForm onSubmit={register}>
       <h1>Registration</h1>
 
       <Fieldset>
@@ -10,13 +35,13 @@ export default function Form() {
           <label htmlFor="firstname">
             <strong>First name</strong>
           </label>
-          <input type="text" name="firstname" />
+          <input type="text" name="firstName" onChange={handleInputChange} />
         </div>
         <div>
           <label htmlFor="lastname">
             <strong>Last name</strong>
           </label>
-          <input type="text" name="lastname" />
+          <input type="text" name="lastName" onChange={handleInputChange} />
         </div>
       </Fieldset>
 
@@ -24,27 +49,47 @@ export default function Form() {
         <label htmlFor="email">
           <strong>Email</strong>
         </label>
-        <input type="text" name="email" />
+        <input type="text" name="email" onChange={handleInputChange} />
       </div>
 
       <h4>Gender</h4>
       <Fieldset>
         <label>
-          <input type="radio" name="gender" value="male" />
+          <input
+            type="radio"
+            name="gender"
+            value="male"
+            onChange={handleInputChange}
+          />
           Male
         </label>
         <label>
-          <input type="radio" name="gender" value="female" />
+          <input
+            type="radio"
+            name="gender"
+            value="female"
+            onChange={handleInputChange}
+          />
           Female
         </label>
         <label>
-          <input type="radio" name="gender" value="diverse" />
+          <input
+            type="radio"
+            name="gender"
+            value="diverse"
+            onChange={handleInputChange}
+          />
           Diverse
         </label>
       </Fieldset>
       <TermsAndConditions>
         <label>
-          <input type="checkbox" name="toc" />
+          <input
+            type="checkbox"
+            name="toc"
+            onChange={handleInputChange}
+            checked={userProfile.toc}
+          />
           Accept Terms and Conditions
         </label>
       </TermsAndConditions>
