@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import styled from 'styled-components/macro'
+import Tags from './Tags'
 
 export default function Form() {
   const [userProfile, setUserProfile] = useState({
@@ -8,28 +9,12 @@ export default function Form() {
     email: '',
     gender: '',
     toc: false,
+    tags: [],
   })
-
-  const validateName = ({ firstName, lastName }) =>
-    firstName.length >= 2 && lastName.length >= 2
-
-  const validateEmail = ({ email }) =>
-    email.includes('@') && hasValidEmailDomain(email)
-
-  const hasValidEmailDomain = (email) => {
-    const parts = email.split('.')
-    return parts[parts.length - 1].length >= 2
-  }
-
-  const tocAccepted = ({ toc }) => toc === true
-
-  const validRegistration = (userProfile) =>
-    validateName(userProfile) &&
-    validateEmail(userProfile) &&
-    tocAccepted(userProfile)
 
   function register(event) {
     event.preventDefault()
+    console.log(userProfile, 'current profile state')
 
     if (validRegistration(userProfile)) {
       console.log(userProfile, 'Send this!')
@@ -42,8 +27,15 @@ export default function Form() {
     const fieldName = event.target.name
     const fieldValue =
       fieldName === 'toc' ? event.target.checked : event.target.value
-
+    console.log(fieldValue)
     setUserProfile({ ...userProfile, [fieldName]: fieldValue })
+  }
+
+  function updateTags(tag) {
+    setUserProfile({
+      ...userProfile,
+      tags: [...userProfile.tags, tag],
+    })
   }
 
   return (
@@ -55,13 +47,23 @@ export default function Form() {
           <label htmlFor="firstname">
             <strong>First name</strong>
           </label>
-          <input type="text" name="firstName" onChange={handleInputChange} />
+          <input
+            type="text"
+            name="firstName"
+            onChange={handleInputChange}
+            value={userProfile.firstName}
+          />
         </div>
         <div>
           <label htmlFor="lastname">
             <strong>Last name</strong>
           </label>
-          <input type="text" name="lastName" onChange={handleInputChange} />
+          <input
+            type="text"
+            name="lastName"
+            onChange={handleInputChange}
+            value={userProfile.lastName}
+          />
         </div>
       </Fieldset>
 
@@ -69,7 +71,12 @@ export default function Form() {
         <label htmlFor="email">
           <strong>Email</strong>
         </label>
-        <input type="text" name="email" onChange={handleInputChange} />
+        <input
+          type="text"
+          name="email"
+          onChange={handleInputChange}
+          value={userProfile.email}
+        />
       </div>
 
       <h4>Gender</h4>
@@ -80,6 +87,7 @@ export default function Form() {
             name="gender"
             value="male"
             onChange={handleInputChange}
+            checked={userProfile.gender === 'male'}
           />
           Male
         </label>
@@ -89,6 +97,7 @@ export default function Form() {
             name="gender"
             value="female"
             onChange={handleInputChange}
+            checked={userProfile.gender === 'female'}
           />
           Female
         </label>
@@ -98,6 +107,7 @@ export default function Form() {
             name="gender"
             value="diverse"
             onChange={handleInputChange}
+            checked={userProfile.gender === 'diverse'}
           />
           Diverse
         </label>
@@ -113,10 +123,33 @@ export default function Form() {
           Accept Terms and Conditions
         </label>
       </TermsAndConditions>
+      <Tags
+        tags={userProfile.tags}
+        onUpdateTags={updateTags}
+        headline="Your interests"
+      />
       <Button>Register</Button>
     </RegisterForm>
   )
 }
+
+const validateName = ({ firstName, lastName }) =>
+  firstName.length >= 2 && lastName.length >= 2
+
+const validateEmail = ({ email }) =>
+  email.includes('@') && hasValidEmailDomain(email)
+
+const hasValidEmailDomain = (email) => {
+  const parts = email.split('.')
+  return parts[parts.length - 1].length >= 2
+}
+
+const tocAccepted = ({ toc }) => toc === true
+
+const validRegistration = (userProfile) =>
+  validateName(userProfile) &&
+  validateEmail(userProfile) &&
+  tocAccepted(userProfile)
 
 const RegisterForm = styled.form`
   max-width: 32rem;
@@ -140,7 +173,7 @@ const RegisterForm = styled.form`
 
   input {
     font-size: 1.25rem;
-    padding: 0.125rem;
+    padding: 0.25rem;
   }
 
   input[type='radio'],
