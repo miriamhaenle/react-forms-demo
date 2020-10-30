@@ -10,12 +10,32 @@ export default function Form() {
     toc: false,
   })
 
+  const validateName = ({ firstName, lastName }) =>
+    firstName.length >= 2 && lastName.length >= 2
+
+  const validateEmail = ({ email }) =>
+    email.includes('@') && hasValidEmailDomain(email)
+
+  const hasValidEmailDomain = (email) => {
+    const parts = email.split('.')
+    return parts[parts.length - 1].length >= 2
+  }
+
+  const tocAccepted = ({ toc }) => toc === true
+
+  const validRegistration = (userProfile) =>
+    validateName(userProfile) &&
+    validateEmail(userProfile) &&
+    tocAccepted(userProfile)
+
   function register(event) {
     event.preventDefault()
-    if (!userProfile.toc) {
-      alert('Please confirm our ToC')
+
+    if (validRegistration(userProfile)) {
+      console.log(userProfile, 'Send this!')
+    } else {
+      alert('Please check the form and accept our TOC')
     }
-    console.log(userProfile)
   }
 
   function handleInputChange(event) {
