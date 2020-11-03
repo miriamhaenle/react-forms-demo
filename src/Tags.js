@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import styled from 'styled-components/macro'
 
-export default function Tags({ tags, onUpdateTags, headline }) {
+export default function Tags({ tags, onUpdateTags, headline, onDeleteTag }) {
   const [inputValue, setInputValue] = useState('')
 
   function handleChange(event) {
@@ -11,40 +11,55 @@ export default function Tags({ tags, onUpdateTags, headline }) {
   function handleKeyDown(event) {
     if (event.key === 'Enter') {
       event.preventDefault()
-      onUpdateTags(inputValue)
+      onUpdateTags(inputValue.toUpperCase())
       setInputValue('')
     }
   }
 
   return (
-    <Tag>
-      <label htmlFor="tag">{headline}</label>
-      <input
-        name="tag"
-        type="text"
-        placeholder="Insert tag"
-        value={inputValue}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-      />
-      {tagsList(tags)}
-    </Tag>
+    <>
+      <h4>{headline}</h4>
+      <Tag>
+        {tagsList(tags, onDeleteTag)}
+
+        <input
+          name="tag"
+          type="text"
+          placeholder="Insert tag"
+          value={inputValue}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+        />
+      </Tag>
+    </>
   )
 }
 
-function tagsList(tags) {
+function tagsList(tags, onDeleteTag) {
   return (
-    <section>
+    <>
       {tags.map((tag, index) => (
-        <span key={index}>{tag} </span>
+        <span key={index}>
+          {tag} <strong onClick={() => onDeleteTag(tag)}>X</strong>
+        </span>
       ))}
-    </section>
+    </>
   )
 }
 
 const Tag = styled.div`
+  border: 1px solid #ccc;
+  display: flex;
+  flex-wrap: wrap;
+
   label {
     font-weight: bold;
+  }
+
+  input {
+    border: none;
+    font-size: 0.9rem;
+    width: 20%;
   }
 
   span {
@@ -53,6 +68,6 @@ const Tag = styled.div`
     color: white;
     display: inline-block;
     padding: 0.5rem;
-    margin: 0.5rem 0.5rem 0 0;
+    margin: 0.5rem;
   }
 `

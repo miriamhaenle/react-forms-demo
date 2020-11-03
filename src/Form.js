@@ -38,6 +38,11 @@ export default function Form() {
     })
   }
 
+  function deleteTags(currentTag) {
+    const updatedTagList = userProfile.tags.filter((tag) => tag !== currentTag)
+    setUserProfile({ ...userProfile, tags: [...updatedTagList] })
+  }
+
   return (
     <RegisterForm onSubmit={register}>
       <h1>Registration</h1>
@@ -127,6 +132,7 @@ export default function Form() {
         tags={userProfile.tags}
         onUpdateTags={updateTags}
         headline="Your interests"
+        onDeleteTag={deleteTags}
       />
       <Button>Register</Button>
     </RegisterForm>
