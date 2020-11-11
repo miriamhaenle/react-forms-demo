@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import styled from 'styled-components/macro'
 import Tags from './Tags'
-import User from './User'
+import ConfirmationPage from './ConfirmationPage'
 
 export default function Form() {
   const initialUser = {
@@ -13,27 +13,45 @@ export default function Form() {
     tags: [],
   }
   const [userProfile, setUserProfile] = useState(initialUser)
-
   const [isRegistered, setIsRegistered] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   function register(event) {
     event.preventDefault()
 
     if (validRegistration(userProfile)) {
-      fetch('http://localhost:4000/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userProfile),
-      })
+      setIsLoading(true)
+      postUser(userProfile)
         .then((data) => data.json())
         .then((newUser) => {
-          setUserProfile(newUser)
-          setIsRegistered(true)
+          handlePostUserResponse(newUser)
         })
-        .catch((error) => console.error(error))
+        .catch(handlePostUserError)
     } else {
       alert('Please check the form and accept our TOC')
     }
+  }
+
+  async function postUser(user) {
+    await new Promise((res) => {
+      setTimeout(() => res(), 2000)
+    })
+    return fetch('http://localhost:4000/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(user),
+    })
+  }
+
+  function handlePostUserResponse(user) {
+    setUserProfile(user)
+    setIsRegistered(true)
+    setIsLoading(false)
+  }
+
+  function handlePostUserError(error) {
+    setIsLoading(false)
+    console.error(error)
   }
 
   function handleInputChange(event) {
@@ -67,18 +85,14 @@ export default function Form() {
     <>
       {isRegistered ? (
         <>
-          <User
+          <ConfirmationPage
             firstName={userProfile.firstName}
             lastName={userProfile.lastName}
-          />
-          <button
-            onClick={() => {
+            clickHandler={() => {
               setIsRegistered(false)
               setUserProfile(initialUser)
             }}
-          >
-            Back
-          </button>
+          />
         </>
       ) : (
         <RegisterForm onSubmit={register}>
@@ -172,7 +186,10 @@ export default function Form() {
             onDeleteTag={deleteTags}
             deleteLastTag={deleteLastTag}
           />
-          <Button>Register</Button>
+          <Button isLoading={isLoading}>
+            <span>Register</span>
+            {isLoading && <Loader />}
+          </Button>
         </RegisterForm>
       )}
     </>
@@ -239,8 +256,11 @@ const Fieldset = styled.fieldset`
 `
 
 const Button = styled.button`
+  background-color: ${(props) => (props.isLoading ? 'gray' : '#1b7e64')};
   color: white;
-  background-color: #1b7e64;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 9px 20px 11px;
   font-size: 1.25rem;
   border-radius: 5px;
@@ -250,4 +270,34 @@ const Button = styled.button`
 
 const TermsAndConditions = styled.div`
   margin: 1rem 0;
+`
+
+const Loader = styled.span`
+  display: inline-block;
+  margin-left: 10px;
+  margin-top: 0;
+  margin-bottom: 0;
+  width: 12px;
+  height: 12px;
+  border-top: 5px solid rgba(255, 255, 255, 0.2);
+  border-right: 5px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 5px solid rgba(255, 255, 255, 0.2);
+  border-left: 5px solid #ffffff;
+  border-radius: 50%;
+  animation: load 1s linear infinite;
+
+  &::before {
+    border-radius: 50%;
+    height: 12px;
+    width: 12px;
+  }
+
+  @keyframes load {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
 `
