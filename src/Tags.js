@@ -1,7 +1,13 @@
 import { useState } from 'react'
 import styled from 'styled-components/macro'
 
-export default function Tags({ tags, onUpdateTags, headline, onDeleteTag }) {
+export default function Tags({
+  tags,
+  onUpdateTags,
+  headline,
+  onDeleteTag,
+  deleteLastTag,
+}) {
   const [inputValue, setInputValue] = useState('')
 
   function handleChange(event) {
@@ -13,6 +19,11 @@ export default function Tags({ tags, onUpdateTags, headline, onDeleteTag }) {
       event.preventDefault()
       onUpdateTags(inputValue.toUpperCase())
       setInputValue('')
+    }
+
+    if (event.key === 'Backspace') {
+      console.log('x')
+      deleteLastTag(tags)
     }
   }
 
@@ -51,15 +62,16 @@ const Tag = styled.div`
   border: 1px solid #ccc;
   display: flex;
   flex-wrap: wrap;
-
-  label {
-    font-weight: bold;
-  }
+  padding: 0.8rem;
 
   input {
     border: none;
     font-size: 0.9rem;
-    width: 20%;
+    width: 30%;
+  }
+
+  label {
+    font-weight: bold;
   }
 
   span {
