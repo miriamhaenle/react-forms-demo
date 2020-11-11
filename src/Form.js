@@ -1,23 +1,36 @@
 import { useState } from 'react'
 import styled from 'styled-components/macro'
 import Tags from './Tags'
+import User from './User'
 
 export default function Form() {
-  const [userProfile, setUserProfile] = useState({
+  const initialUser = {
     firstName: '',
     lastName: '',
     email: '',
     gender: '',
     toc: false,
     tags: [],
-  })
+  }
+  const [userProfile, setUserProfile] = useState(initialUser)
+
+  const [isRegistered, setIsRegistered] = useState(false)
 
   function register(event) {
     event.preventDefault()
-    console.log(userProfile, 'current profile state')
 
     if (validRegistration(userProfile)) {
-      console.log(userProfile, 'Send this!')
+      fetch('http://localhost:4000/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userProfile),
+      })
+        .then((data) => data.json())
+        .then((newUser) => {
+          setUserProfile(newUser)
+          setIsRegistered(true)
+        })
+        .catch((error) => console.error(error))
     } else {
       alert('Please check the form and accept our TOC')
     }
@@ -27,7 +40,6 @@ export default function Form() {
     const fieldName = event.target.name
     const fieldValue =
       fieldName === 'toc' ? event.target.checked : event.target.value
-    console.log(fieldValue)
     setUserProfile({ ...userProfile, [fieldName]: fieldValue })
   }
 
@@ -43,99 +55,127 @@ export default function Form() {
     setUserProfile({ ...userProfile, tags: [...updatedTagList] })
   }
 
+  function deleteLastTag() {
+    const updatedTagList = userProfile.tags.slice(
+      0,
+      userProfile.tags.length - 1
+    )
+    setUserProfile({ ...userProfile, tags: [...updatedTagList] })
+  }
+
   return (
-    <RegisterForm onSubmit={register}>
-      <h1>Registration</h1>
+    <>
+      {isRegistered ? (
+        <>
+          <User
+            firstName={userProfile.firstName}
+            lastName={userProfile.lastName}
+          />
+          <button
+            onClick={() => {
+              setIsRegistered(false)
+              setUserProfile(initialUser)
+            }}
+          >
+            Back
+          </button>
+        </>
+      ) : (
+        <RegisterForm onSubmit={register}>
+          <h1>Registration</h1>
 
-      <Fieldset>
-        <div>
-          <label htmlFor="firstname">
-            <strong>First name</strong>
-          </label>
-          <input
-            type="text"
-            name="firstName"
-            onChange={handleInputChange}
-            value={userProfile.firstName}
-          />
-        </div>
-        <div>
-          <label htmlFor="lastname">
-            <strong>Last name</strong>
-          </label>
-          <input
-            type="text"
-            name="lastName"
-            onChange={handleInputChange}
-            value={userProfile.lastName}
-          />
-        </div>
-      </Fieldset>
+          <Fieldset>
+            <div>
+              <label htmlFor="firstname">
+                <strong>First name</strong>
+              </label>
+              <input
+                type="text"
+                name="firstName"
+                onChange={handleInputChange}
+                value={userProfile.firstName}
+              />
+            </div>
+            <div>
+              <label htmlFor="lastname">
+                <strong>Last name</strong>
+              </label>
+              <input
+                type="text"
+                name="lastName"
+                onChange={handleInputChange}
+                value={userProfile.lastName}
+              />
+            </div>
+          </Fieldset>
 
-      <div>
-        <label htmlFor="email">
-          <strong>Email</strong>
-        </label>
-        <input
-          type="text"
-          name="email"
-          onChange={handleInputChange}
-          value={userProfile.email}
-        />
-      </div>
+          <div>
+            <label htmlFor="email">
+              <strong>Email</strong>
+            </label>
+            <input
+              type="text"
+              name="email"
+              onChange={handleInputChange}
+              value={userProfile.email}
+            />
+          </div>
 
-      <h4>Gender</h4>
-      <Fieldset>
-        <label>
-          <input
-            type="radio"
-            name="gender"
-            value="male"
-            onChange={handleInputChange}
-            checked={userProfile.gender === 'male'}
+          <h4>Gender</h4>
+          <Fieldset>
+            <label>
+              <input
+                type="radio"
+                name="gender"
+                value="male"
+                onChange={handleInputChange}
+                checked={userProfile.gender === 'male'}
+              />
+              Male
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="gender"
+                value="female"
+                onChange={handleInputChange}
+                checked={userProfile.gender === 'female'}
+              />
+              Female
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="gender"
+                value="diverse"
+                onChange={handleInputChange}
+                checked={userProfile.gender === 'diverse'}
+              />
+              Diverse
+            </label>
+          </Fieldset>
+          <TermsAndConditions>
+            <label>
+              <input
+                type="checkbox"
+                name="toc"
+                onChange={handleInputChange}
+                checked={userProfile.toc}
+              />
+              Accept Terms and Conditions
+            </label>
+          </TermsAndConditions>
+          <Tags
+            tags={userProfile.tags}
+            onUpdateTags={updateTags}
+            headline="Your interests"
+            onDeleteTag={deleteTags}
+            deleteLastTag={deleteLastTag}
           />
-          Male
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="gender"
-            value="female"
-            onChange={handleInputChange}
-            checked={userProfile.gender === 'female'}
-          />
-          Female
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="gender"
-            value="diverse"
-            onChange={handleInputChange}
-            checked={userProfile.gender === 'diverse'}
-          />
-          Diverse
-        </label>
-      </Fieldset>
-      <TermsAndConditions>
-        <label>
-          <input
-            type="checkbox"
-            name="toc"
-            onChange={handleInputChange}
-            checked={userProfile.toc}
-          />
-          Accept Terms and Conditions
-        </label>
-      </TermsAndConditions>
-      <Tags
-        tags={userProfile.tags}
-        onUpdateTags={updateTags}
-        headline="Your interests"
-        onDeleteTag={deleteTags}
-      />
-      <Button>Register</Button>
-    </RegisterForm>
+          <Button>Register</Button>
+        </RegisterForm>
+      )}
+    </>
   )
 }
 
