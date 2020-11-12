@@ -16,7 +16,6 @@ export default function Form({ checkRegistrationStatus }) {
 
   function register(event) {
     event.preventDefault()
-
     if (validRegistration(userProfile)) {
       setIsLoading(true)
       postUser(userProfile)
@@ -31,9 +30,9 @@ export default function Form({ checkRegistrationStatus }) {
   }
 
   async function postUser(user) {
-    await new Promise((res) => {
+    /*     await new Promise((res) => {
       setTimeout(() => res(), 2000)
-    })
+    }) */
     return fetch('http://localhost:4000/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -42,9 +41,9 @@ export default function Form({ checkRegistrationStatus }) {
   }
 
   function handlePostUserResponse(user) {
+    setIsLoading(false)
     setUserProfile(user)
     checkRegistrationStatus()
-    setIsLoading(false)
   }
 
   function handlePostUserError(error) {
@@ -85,10 +84,11 @@ export default function Form({ checkRegistrationStatus }) {
 
       <Fieldset>
         <div>
-          <label htmlFor="firstname">
+          <label htmlFor="firstname" id="firstname">
             <strong>First name</strong>
           </label>
           <input
+            aria-labelledby="firstname"
             type="text"
             name="firstName"
             onChange={handleInputChange}
@@ -96,10 +96,11 @@ export default function Form({ checkRegistrationStatus }) {
           />
         </div>
         <div>
-          <label htmlFor="lastname">
+          <label htmlFor="lastname" id="lastname">
             <strong>Last name</strong>
           </label>
           <input
+            aria-labelledby="lastname"
             type="text"
             name="lastName"
             onChange={handleInputChange}
@@ -109,10 +110,11 @@ export default function Form({ checkRegistrationStatus }) {
       </Fieldset>
 
       <div>
-        <label htmlFor="email">
+        <label htmlFor="email" id="email">
           <strong>Email</strong>
         </label>
         <input
+          aria-labelledby="email"
           type="text"
           name="email"
           onChange={handleInputChange}
@@ -171,7 +173,7 @@ export default function Form({ checkRegistrationStatus }) {
         onDeleteTag={deleteTags}
         deleteLastTag={deleteLastTag}
       />
-      <Button isLoading={isLoading}>
+      <Button isLoading={isLoading} type="submit">
         <span>Register</span>
         {isLoading && <Loader />}
       </Button>

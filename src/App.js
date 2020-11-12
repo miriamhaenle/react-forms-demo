@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import ConfirmationPage from './ConfirmationPage'
+import ConfirmationPage from './pages/ConfirmationPage'
 import Form from './Form'
 import { Switch, Route } from 'react-router-dom'
 import AdminPage from './pages/AdminPage'
