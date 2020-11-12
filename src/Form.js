@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import styled from 'styled-components/macro'
 import Tags from './Tags'
-import ConfirmationPage from './ConfirmationPage'
 
-export default function Form() {
+export default function Form({ checkRegistrationStatus }) {
   const initialUser = {
     firstName: '',
     lastName: '',
@@ -13,7 +12,6 @@ export default function Form() {
     tags: [],
   }
   const [userProfile, setUserProfile] = useState(initialUser)
-  const [isRegistered, setIsRegistered] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
   function register(event) {
@@ -45,7 +43,7 @@ export default function Form() {
 
   function handlePostUserResponse(user) {
     setUserProfile(user)
-    setIsRegistered(true)
+    checkRegistrationStatus()
     setIsLoading(false)
   }
 
@@ -82,117 +80,102 @@ export default function Form() {
   }
 
   return (
-    <>
-      {isRegistered ? (
-        <>
-          <ConfirmationPage
-            firstName={userProfile.firstName}
-            lastName={userProfile.lastName}
-            clickHandler={() => {
-              setIsRegistered(false)
-              setUserProfile(initialUser)
-            }}
+    <RegisterForm onSubmit={register}>
+      <h1>Registration</h1>
+
+      <Fieldset>
+        <div>
+          <label htmlFor="firstname">
+            <strong>First name</strong>
+          </label>
+          <input
+            type="text"
+            name="firstName"
+            onChange={handleInputChange}
+            value={userProfile.firstName}
           />
-        </>
-      ) : (
-        <RegisterForm onSubmit={register}>
-          <h1>Registration</h1>
-
-          <Fieldset>
-            <div>
-              <label htmlFor="firstname">
-                <strong>First name</strong>
-              </label>
-              <input
-                type="text"
-                name="firstName"
-                onChange={handleInputChange}
-                value={userProfile.firstName}
-              />
-            </div>
-            <div>
-              <label htmlFor="lastname">
-                <strong>Last name</strong>
-              </label>
-              <input
-                type="text"
-                name="lastName"
-                onChange={handleInputChange}
-                value={userProfile.lastName}
-              />
-            </div>
-          </Fieldset>
-
-          <div>
-            <label htmlFor="email">
-              <strong>Email</strong>
-            </label>
-            <input
-              type="text"
-              name="email"
-              onChange={handleInputChange}
-              value={userProfile.email}
-            />
-          </div>
-
-          <h4>Gender</h4>
-          <Fieldset>
-            <label>
-              <input
-                type="radio"
-                name="gender"
-                value="male"
-                onChange={handleInputChange}
-                checked={userProfile.gender === 'male'}
-              />
-              Male
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="gender"
-                value="female"
-                onChange={handleInputChange}
-                checked={userProfile.gender === 'female'}
-              />
-              Female
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="gender"
-                value="diverse"
-                onChange={handleInputChange}
-                checked={userProfile.gender === 'diverse'}
-              />
-              Diverse
-            </label>
-          </Fieldset>
-          <TermsAndConditions>
-            <label>
-              <input
-                type="checkbox"
-                name="toc"
-                onChange={handleInputChange}
-                checked={userProfile.toc}
-              />
-              Accept Terms and Conditions
-            </label>
-          </TermsAndConditions>
-          <Tags
-            tags={userProfile.tags}
-            onUpdateTags={updateTags}
-            headline="Your interests"
-            onDeleteTag={deleteTags}
-            deleteLastTag={deleteLastTag}
+        </div>
+        <div>
+          <label htmlFor="lastname">
+            <strong>Last name</strong>
+          </label>
+          <input
+            type="text"
+            name="lastName"
+            onChange={handleInputChange}
+            value={userProfile.lastName}
           />
-          <Button isLoading={isLoading}>
-            <span>Register</span>
-            {isLoading && <Loader />}
-          </Button>
-        </RegisterForm>
-      )}
-    </>
+        </div>
+      </Fieldset>
+
+      <div>
+        <label htmlFor="email">
+          <strong>Email</strong>
+        </label>
+        <input
+          type="text"
+          name="email"
+          onChange={handleInputChange}
+          value={userProfile.email}
+        />
+      </div>
+
+      <h4>Gender</h4>
+      <Fieldset>
+        <label>
+          <input
+            type="radio"
+            name="gender"
+            value="male"
+            onChange={handleInputChange}
+            checked={userProfile.gender === 'male'}
+          />
+          Male
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="gender"
+            value="female"
+            onChange={handleInputChange}
+            checked={userProfile.gender === 'female'}
+          />
+          Female
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="gender"
+            value="diverse"
+            onChange={handleInputChange}
+            checked={userProfile.gender === 'diverse'}
+          />
+          Diverse
+        </label>
+      </Fieldset>
+      <TermsAndConditions>
+        <label>
+          <input
+            type="checkbox"
+            name="toc"
+            onChange={handleInputChange}
+            checked={userProfile.toc}
+          />
+          Accept Terms and Conditions
+        </label>
+      </TermsAndConditions>
+      <Tags
+        tags={userProfile.tags}
+        onUpdateTags={updateTags}
+        headline="Your interests"
+        onDeleteTag={deleteTags}
+        deleteLastTag={deleteLastTag}
+      />
+      <Button isLoading={isLoading}>
+        <span>Register</span>
+        {isLoading && <Loader />}
+      </Button>
+    </RegisterForm>
   )
 }
 
