@@ -1,8 +1,15 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import styled from 'styled-components/macro'
 import Tags from './Tags'
+import { useHistory } from 'react-router-dom'
 
-export default function Form({ checkRegistrationStatus }) {
+export default function Form({
+  checkRegistrationStatus,
+  title = 'Registration',
+  buttonText = 'Register',
+  submitAction = 'register',
+  userId,
+}) {
   const initialUser = {
     firstName: '',
     lastName: '',
@@ -14,16 +21,33 @@ export default function Form({ checkRegistrationStatus }) {
   const [userProfile, setUserProfile] = useState(initialUser)
   const [isLoading, setIsLoading] = useState(false)
 
+  const history = useHistory()
+
+  useEffect(() => {
+    if (userId) {
+      fetch(`http://localhost:4000/users/${userId}`)
+        .then((data) => data.json())
+        .then((user) => setUserProfile(user))
+    }
+  }, [userId])
+
   function register(event) {
     event.preventDefault()
     if (validRegistration(userProfile)) {
       setIsLoading(true)
-      postUser(userProfile)
-        .then((data) => data.json())
-        .then((newUser) => {
-          handlePostUserResponse(newUser)
-        })
-        .catch(handlePostUserError)
+      if (submitAction === 'register') {
+        postUser(userProfile)
+          .then((data) => data.json())
+          .then((newUser) => {
+            handlePostUserResponse(newUser)
+          })
+          .catch(handlePostUserError)
+      } else if (submitAction === 'updateUser') {
+        updateUser(userProfile)
+          .then((data) => data.json())
+          .then((updatedUser) => history.push('/admin/users'))
+          .catch(handlePostUserError)
+      }
     } else {
       alert('Please check the form and accept our TOC')
     }
@@ -35,6 +59,14 @@ export default function Form({ checkRegistrationStatus }) {
     }) */
     return fetch('http://localhost:4000/users', {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(user),
+    })
+  }
+
+  async function updateUser(user) {
+    return fetch(`http://localhost:4000/users/${user._id}`, {
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(user),
     })
@@ -80,7 +112,7 @@ export default function Form({ checkRegistrationStatus }) {
 
   return (
     <RegisterForm onSubmit={register}>
-      <h1>Registration</h1>
+      <h1>{title}</h1>
 
       <Fieldset>
         <div>
@@ -174,7 +206,7 @@ export default function Form({ checkRegistrationStatus }) {
         deleteLastTag={deleteLastTag}
       />
       <Button isLoading={isLoading} type="submit">
-        <span>Register</span>
+        <span>{buttonText}</span>
         {isLoading && <Loader />}
       </Button>
     </RegisterForm>
