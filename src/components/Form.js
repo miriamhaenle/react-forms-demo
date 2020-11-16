@@ -45,7 +45,7 @@ export default function Form({
       } else if (submitAction === 'updateUser') {
         updateUser(userProfile)
           .then((data) => data.json())
-          .then((updatedUser) => history.push('/admin/users'))
+          .then((updatedUser) => history.push('/admin/users', { updatedUser }))
           .catch(handlePostUserError)
       }
     } else {
