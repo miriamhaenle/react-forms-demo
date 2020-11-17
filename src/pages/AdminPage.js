@@ -14,7 +14,7 @@ export default function AdminPage() {
       .then((data) => data.json())
       .then((users) => users.length > 0 && setUsers(users))
       .catch((error) => console.error(error.message))
-  })
+  }, [])
 
   return (
     <Page>
