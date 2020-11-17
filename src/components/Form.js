@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import styled from 'styled-components/macro'
 import Tags from './Tags'
+import Button from './Button'
 import { useHistory } from 'react-router-dom'
 
 export default function Form({
@@ -205,10 +206,7 @@ export default function Form({
         onDeleteTag={deleteTags}
         deleteLastTag={deleteLastTag}
       />
-      <Button isLoading={isLoading} type="submit">
-        <span>{buttonText}</span>
-        {isLoading && <Loader />}
-      </Button>
+      <Button isLoading={isLoading} buttonText={buttonText} />
     </RegisterForm>
   )
 }
@@ -272,49 +270,6 @@ const Fieldset = styled.fieldset`
   padding: 0;
 `
 
-const Button = styled.button`
-  background-color: ${(props) => (props.isLoading ? 'gray' : '#1b7e64')};
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 9px 20px 11px;
-  font-size: 1.25rem;
-  border-radius: 5px;
-  border: none;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-`
-
 const TermsAndConditions = styled.div`
   margin: 1rem 0;
-`
-
-const Loader = styled.span`
-  display: inline-block;
-  margin-left: 10px;
-  margin-top: 0;
-  margin-bottom: 0;
-  width: 12px;
-  height: 12px;
-  border-top: 5px solid rgba(255, 255, 255, 0.2);
-  border-right: 5px solid rgba(255, 255, 255, 0.2);
-  border-bottom: 5px solid rgba(255, 255, 255, 0.2);
-  border-left: 5px solid #ffffff;
-  border-radius: 50%;
-  animation: load 1s linear infinite;
-
-  &::before {
-    border-radius: 50%;
-    height: 12px;
-    width: 12px;
-  }
-
-  @keyframes load {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
 `
