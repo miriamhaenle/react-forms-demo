@@ -1,11 +1,20 @@
 import { useEffect, useState } from 'react'
 import styled from 'styled-components/macro'
-import { Switch, Route, Link, useParams, useRouteMatch } from 'react-router-dom'
+import {
+  Switch,
+  Route,
+  Link,
+  useParams,
+  useRouteMatch,
+  useHistory,
+} from 'react-router-dom'
 import Form from '../components/Form'
 
 export default function AdminPage() {
   const [users, setUsers] = useState([])
   const { path } = useRouteMatch()
+  const history = useHistory()
+  const updatedUser = history.location.state?.updatedUser
 
   useEffect(() => {
     fetch(
@@ -14,7 +23,7 @@ export default function AdminPage() {
       .then((data) => data.json())
       .then((users) => users.length > 0 && setUsers(users))
       .catch((error) => console.error(error.message))
-  }, [])
+  }, [updatedUser])
 
   return (
     <Page>
@@ -22,7 +31,10 @@ export default function AdminPage() {
         <Route exact path={path}>
           <h2>Admin Page</h2>
           {users.map((user) => (
-            <Card key={user._id}>
+            <Card
+              key={user._id}
+              highlight={updatedUser && updatedUser._id === user._id}
+            >
               <Edit to={`/admin/users/${user._id}`}>✏️</Edit>
               {user.firstName} {user.lastName} <br />
               {user.email} <br />
@@ -62,7 +74,7 @@ const Page = styled.div`
 `
 
 const Card = styled.div`
-  background: lightblue;
+  background: ${(props) => (props.highlight ? 'hotpink' : 'lightblue')};
   border-radius: 3px;
   box-shadow: 2px 2px 4px #999;
   color: darkblue;
