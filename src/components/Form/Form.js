@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import styled from 'styled-components/macro'
-import Tags from './Tags'
+import Tags from '../Tags/Tags'
 import { useHistory } from 'react-router-dom'
-import Button from './Button'
+import Button from '../Button/Button'
 
 export default function Form({
   checkRegistrationStatus,
