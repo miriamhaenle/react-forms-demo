@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import styled from 'styled-components/macro'
+import PropTypes from 'prop-types'
 
 export default function Tags({
   tags,
@@ -56,6 +57,11 @@ function tagsList(tags, onDeleteTag) {
       ))}
     </>
   )
+}
+
+Tags.propTypes = {
+  headline: PropTypes.string,
+  tags: PropTypes.array.isRequired,
 }
 
 const Tag = styled.div`
